@@ -105,8 +105,10 @@ if(!$hasAnsweredCorrectly){
         echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
         unset($_SESSION['message']);
     }
+    create_button_to_home();
 }
 else{
+    echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
     create_button_to_home();
 }
 

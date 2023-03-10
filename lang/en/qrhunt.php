@@ -50,12 +50,14 @@ $string['modulenameicon'] = '<img src="'.$CFG->wwwroot.'/mod/qrhunt/pix/icon.png
 
 $string['qrhuntcluestarttext'] = 'Clue to the QR code: ';
 $string['generatedqrcode'] = 'Generated QR code';
-$string['downloadqrcode'] = 'Download QR code';
+$string['downloadqrcode'] = 'Download QR code image';
+$string['errorfilenotfound'] = 'Download QR code image';
 $string['noqrimagefound'] = 'No QR image found';
+
 $string['correctanswermessage'] = 'Congratulations, your answer is correct press back to start to go back';
 $string['incorrectanswermessage'] = 'Sorry, your answer is not correct';
 
-$string['enterqranswer'] = 'Enter QR answer';
+$string['enterqranswer'] = 'Enter new QR answer';
 $string['refreshqr'] = 'Refresh QR';
 
 $string['entercluetext'] = 'Enter new clue text';

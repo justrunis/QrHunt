@@ -30,5 +30,5 @@ if (file_exists($file)) {
     readfile($file);
     exit;
 } else {
-    echo 'Error: File not found.';
+    echo get_string('errorfilenotfound', 'mod_qrhunt');
 }

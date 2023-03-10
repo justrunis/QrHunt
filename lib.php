@@ -97,12 +97,6 @@ function qrhunt_delete_instance($id) {
     return true;
 }
 
-
-
-
-
-
-
 function generate_qr_code_data($data, $size = 10, $margin = 1, $errorCorrection = 'L') {
     $tempDir = sys_get_temp_dir();
     $filename = tempnam($tempDir, 'qr');
@@ -126,15 +120,30 @@ function display_qr_code_image($imagePath) {
         // Display the image and add download button.
         $imageContent = file_get_contents($imagePath);
         $imageData = base64_encode($imageContent);
+
         if (is_siteadmin()) {
-            echo '<h1>' . get_string('generatedqrcode', 'mod_qrhunt') . '</h1>';
-            echo "<div><img src='data:image/png;base64,{$imageData}'></div>";
-            echo "<a href='download.php?file={$imagePath}'><button type=\"button\" class=\"btn btn-dark custom-button\">" . get_string('downloadqrcode', 'mod_qrhunt') . "</button></a><p></p>";
+            echo html_writer::tag('h1', get_string('generatedqrcode', 'mod_qrhunt'));
+            echo html_writer::tag('div', html_writer::empty_tag('img', array('src' => 'data:image/png;base64,' . $imageData)));
+            $linkAttributes = array(
+                'href' => 'download.php?file=' . $imagePath,
+            );
+            $buttonAttributes = array(
+                'type' => 'button',
+                'class' => 'btn btn-dark custom-button',
+            );
+            echo html_writer::start_tag('a', $linkAttributes);
+            echo html_writer::start_tag('button', $buttonAttributes);
+            echo get_string('downloadqrcode', 'mod_qrhunt');
+            echo html_writer::end_tag('button');
+            echo html_writer::end_tag('a');
+            echo html_writer::tag('p', '');
         }
     } else {
-        echo '<h1>' . get_string('noqrimagefound', 'mod_qrhunt') . '</h1>';
+        echo html_writer::tag('h1', get_string('noqrimagefound', 'mod_qrhunt'));
     }
 }
+
+
 
 function insert_user_activity_data($DB, $moduleinstance, $answer) {
     // Get the user ID and activity ID.
@@ -315,7 +324,6 @@ function create_button_to_home() {
     );
     
     echo html_writer::empty_tag('br');
-    echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
     echo html_writer::empty_tag('br');
     echo html_writer::start_tag('a', $link_attributes);
     echo get_string('back', 'mod_qrhunt');

@@ -47,7 +47,6 @@ if (!is_siteadmin()) {
     redirect(new moodle_url('/mod/qrhunt/play.php', array('id' => $cm->id)));
 }
 
-
 $modulecontext = context_module::instance($cm->id);
 
 $event = \mod_qrhunt\event\course_module_viewed::create(array(
