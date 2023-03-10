@@ -43,6 +43,11 @@ if ($id) {
 
 require_login($course, true, $cm);
 
+if (!is_siteadmin()) {
+    redirect(new moodle_url('/mod/qrhunt/play.php', array('id' => $cm->id)));
+}
+
+
 $modulecontext = context_module::instance($cm->id);
 
 $event = \mod_qrhunt\event\course_module_viewed::create(array(
@@ -61,7 +66,8 @@ $PAGE->set_context($modulecontext);
 
 echo $OUTPUT->header();
 
-echo "<h1> Clue: ", $moduleinstance->cluetext,"</h1>";
+// Display the clue
+echo '<h1>' . get_string('qrhuntcluestarttext', 'mod_qrhunt') . ' ' . $moduleinstance->cluetext . '</h1>';
 // Get QR code data.
 $qrCodeData = $moduleinstance->answer;
 // Name of generated QR code file
@@ -78,6 +84,7 @@ if(is_siteadmin()){
     display_clue_update_form();
 }
 
+create_button_to_play($cm);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['answer'])) {

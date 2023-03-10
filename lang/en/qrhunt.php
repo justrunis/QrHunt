@@ -48,3 +48,21 @@ $string['clue_updated'] = 'Clue has been updated';
 $string['pluginadministration'] = 'Plugin administration';
 $string['modulenameicon'] = '<img src="'.$CFG->wwwroot.'/mod/qrhunt/pix/icon.png" class="icon" alt="QR icon" />';
 
+$string['qrhuntcluestarttext'] = 'Clue to the QR code: ';
+$string['generatedqrcode'] = 'Generated QR code';
+$string['downloadqrcode'] = 'Download QR code';
+$string['noqrimagefound'] = 'No QR image found';
+$string['correctanswermessage'] = 'Congratulations, your answer is correct press back to start to go back';
+$string['incorrectanswermessage'] = 'Sorry, your answer is not correct';
+
+$string['enterqranswer'] = 'Enter QR answer';
+$string['refreshqr'] = 'Refresh QR';
+
+$string['entercluetext'] = 'Enter new clue text';
+$string['updatecluetext'] = 'Update clue text';
+
+$string['enteranswer'] = 'Enter your answer';
+$string['submitanswer'] = 'Submit answer';
+
+$string['play'] = 'Play';
+$string['back'] = 'Back to start';

@@ -127,12 +127,12 @@ function display_qr_code_image($imagePath) {
         $imageContent = file_get_contents($imagePath);
         $imageData = base64_encode($imageContent);
         if (is_siteadmin()) {
-            echo "<h1>Generated QR Code</h1>";
+            echo '<h1>' . get_string('generatedqrcode', 'mod_qrhunt') . '</h1>';
             echo "<div><img src='data:image/png;base64,{$imageData}'></div>";
-            echo "<a href='download.php?file={$imagePath}'><button type=\"button\" class=\"btn btn-dark custom-button\">Download QR Code</button></a><p></p>";
+            echo "<a href='download.php?file={$imagePath}'><button type=\"button\" class=\"btn btn-dark custom-button\">" . get_string('downloadqrcode', 'mod_qrhunt') . "</button></a><p></p>";
         }
     } else {
-        echo '<h1>No QR code image found.</h1>';
+        echo '<h1>' . get_string('noqrimagefound', 'mod_qrhunt') . '</h1>';
     }
 }
 
@@ -153,11 +153,11 @@ function insert_user_activity_data($DB, $moduleinstance, $answer) {
     if ($answer == $moduleinstance->intro) {
         $qrhunt_user_activity->correctanswer = 1;
         $DB->insert_record('qrhunt_user_activity', $qrhunt_user_activity);
-        echo '<br>Congratulations, your answer is correct!';
+        echo '<br>' . get_string('correctanswermessage', 'mod_qrhunt') . '';
     } else {
         $qrhunt_user_activity->correctanswer = 0;
         $DB->insert_record('qrhunt_user_activity', $qrhunt_user_activity);
-        echo '<br>Sorry, your answer is incorrect.';
+        echo '<br>' . get_string('incorrectanswermessage', 'mod_qrhunt') . '';
     }
 
 }
@@ -173,7 +173,7 @@ function display_answer_update_form(){
     $textarea_attributes = array(
         'name' => 'answer',
         'id' => 'answer',
-        'placeholder' => 'Enter QR answer',
+        'placeholder' => get_string('enterqranswer', 'mod_qrhunt'),
         'rows' => '5',
         'cols' => '50'
     );
@@ -181,7 +181,7 @@ function display_answer_update_form(){
     // Submit button attributes.
     $input_attributes = array(
         'type' => 'submit',
-        'value' => 'Refresh QR',
+        'value' => get_string('refreshqr', 'mod_qrhunt'),
         'class' => 'btn btn-dark'
     );
     
@@ -218,7 +218,7 @@ function display_clue_update_form(){
     $textarea_attributes = array(
         'name' => 'cluetext',
         'id' => 'cluetext',
-        'placeholder' => 'Enter the new clue text',
+        'placeholder' => get_string('entercluetext', 'mod_qrhunt'),
         'rows' => '5',
         'cols' => '50',
     );
@@ -226,7 +226,7 @@ function display_clue_update_form(){
     // Submit button attributes.
     $button_attributes = array(
         'type' => 'submit',
-        'value' => 'Update Clue Text',
+        'value' => get_string('updatecluetext', 'mod_qrhunt'),
         'class' => 'btn btn-dark',
     );
 
@@ -252,9 +252,84 @@ function display_clue_update_form(){
 
 }
 
-function submit_answer_form(){
-    echo '<form method="post">';
-    echo '<input type="text" name="answer" placeholder="Enter your answer">';
-    echo '<button type="submit">Update Clue Text</button>';
-    echo '</form>';
+function display_user_submit_form(){
+    $form_attributes = array(
+        'method' => 'post'
+    );
+
+    $input_attributes = array(
+        'type' => 'text',
+        'name' => 'user_answer',
+        'id' => 'user_answer',
+        'placeholder' => get_string('enteranswer', 'mod_qrhunt'),
+        'rows' => '5',
+        'cols' => '50',
+    );
+
+    $submit_attributes = array(
+        'type' => 'submit',
+        'name' => 'submit_answer',
+        'value' => get_string('submitanswer', 'mod_qrhunt'),
+        'class' => 'btn btn-dark'
+    );
+
+    echo html_writer::start_tag('form', $form_attributes);
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::start_tag('textarea', $input_attributes);
+    echo html_writer::end_tag('textarea');
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::empty_tag('input', $submit_attributes);
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+
+    echo html_writer::end_tag('form');
+}
+
+
+function create_button_to_play($cm) {
+    global $PAGE;
+    
+    $url = new moodle_url('/mod/qrhunt/play.php', array('id' => $PAGE->cm->id));
+    $link_attributes = array(
+        'href' => $url->out(),
+        'class' => 'btn btn-dark',
+    );
+    
+    echo html_writer::start_tag('a', $link_attributes);
+    echo get_string('play', 'mod_qrhunt');
+    echo html_writer::end_tag('a');    
+}
+
+function create_button_to_home() {
+    global $CFG;
+
+    $url = new moodle_url($CFG->wwwroot);
+    $link_attributes = array(
+        'href' => $url->out(),
+        'class' => 'btn btn-dark',
+    );
+    
+    echo html_writer::empty_tag('br');
+    echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
+    echo html_writer::empty_tag('br');
+    echo html_writer::start_tag('a', $link_attributes);
+    echo get_string('back', 'mod_qrhunt');
+    echo html_writer::end_tag('a');
+}
+
+function has_user_answered_correctly($DB, $USER, $moduleinstance){
+    $records = $DB->get_records('qrhunt_user_activity', array('userid' => $USER->id));
+    $qrhunt = $DB->get_record('qrhunt', array('id' => $moduleinstance->id));
+
+    foreach ($records as $record) {
+        if($record->correctanswer == 1 && $record->answer == $qrhunt->answer){
+            return true;
+        }
+    }
+    return false;
 }
