@@ -79,51 +79,33 @@ if(is_siteadmin()){
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
-    // Get the submitted clue text.
-    $cluetext = $_POST['cluetext'];
-
-    // Update the cluetext field in the qrhunt table.
-    $update = new stdClass();
-    $update->id = $moduleinstance->id;
-    $update->cluetext = $cluetext;
-    $DB->update_record('qrhunt', $update);
-
-    // Redirect to the current page to avoid form resubmission on refresh.
-    redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
-
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])) {
-    // Get the submitted answer.
-    $answer = $_POST['answer'];
-
-    // Update the answer field in the qrhunt table.
-    $update = new stdClass();
-    $update->id = $moduleinstance->id;
-    $update->answer = $answer;
-    $DB->update_record('qrhunt', $update);
-
-    // Redirect to the current page to avoid form resubmission on refresh.
-    redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
-}
-
-
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
-    // Get the submitted answer.
-    $answer = $_POST['answer'];
+    if (isset($_POST['answer'])) {
+        // Get the submitted answer.
+        $answer = $_POST['answer'];
 
-    // Update the answer field in the qrhunt table.
-    $update = new stdClass();
-    $update->id = $moduleinstance->id;
-    $update->answer = $answer;
-    $DB->update_record('qrhunt', $update);
+        // Update the answer field in the qrhunt table.
+        $update = new stdClass();
+        $update->id = $moduleinstance->id;
+        $update->answer = $answer;
+        $DB->update_record('qrhunt', $update);
 
-    // Redirect to the current page to avoid form resubmission on refresh.
-    redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
+        // Redirect to the current page to avoid form resubmission on refresh.
+        redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
+    } elseif (isset($_POST['cluetext'])) {
+        // Get the submitted clue text.
+        $cluetext = $_POST['cluetext'];
 
+        // Update the cluetext field in the qrhunt table.
+        $update = new stdClass();
+        $update->id = $moduleinstance->id;
+        $update->cluetext = $cluetext;
+        $DB->update_record('qrhunt', $update);
+
+        // Redirect to the current page to avoid form resubmission on refresh.
+        redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
+    }
 }
+
 
 echo $OUTPUT->footer();

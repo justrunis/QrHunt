@@ -163,21 +163,93 @@ function insert_user_activity_data($DB, $moduleinstance, $answer) {
 }
 
 function display_answer_update_form(){
-    // Display the form.
-    echo '<form method="post">';
-    echo '<input type="text" name="answer" id="answer" placeholder="Enter QR answer">';
-    echo '<input type="submit" value="Refresh QR">';
-    echo '</form>';
-    echo '<br>';
+    // Form attributes.
+    $form_attributes = array(
+        'method' => 'post',
+        'class' => 'form-horizontal'
+    );
+    
+    // Textarea attributes.
+    $textarea_attributes = array(
+        'name' => 'answer',
+        'id' => 'answer',
+        'placeholder' => 'Enter QR answer',
+        'rows' => '5',
+        'cols' => '50'
+    );
+    
+    // Submit button attributes.
+    $input_attributes = array(
+        'type' => 'submit',
+        'value' => 'Refresh QR',
+        'class' => 'btn btn-dark'
+    );
+    
+    // Form start.
+    echo html_writer::start_tag('form', $form_attributes);
+
+    // Textarea div.
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::tag('textarea', '', $textarea_attributes);
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+    
+    // Button div.
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::empty_tag('input', $input_attributes);
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+    
+    // Form end.
+    echo html_writer::end_tag('form');     
+    
 }
 
 function display_clue_update_form(){
-    // Display the form.
-    echo '<form method="post">';
-    echo '<input type="text" name="cluetext" placeholder="Enter the new clue text">';
-    echo '<button type="submit" name="update">Update Clue Text</button>';
-    echo '</form>';
-    echo '<br>';
+
+    // Form attributes.
+    $form_attributes = array(
+        'method' => 'post',
+    );
+
+    // Textarea attributes.
+    $textarea_attributes = array(
+        'name' => 'cluetext',
+        'id' => 'cluetext',
+        'placeholder' => 'Enter the new clue text',
+        'rows' => '5',
+        'cols' => '50',
+    );
+
+    // Submit button attributes.
+    $button_attributes = array(
+        'type' => 'submit',
+        'value' => 'Update Clue Text',
+        'class' => 'btn btn-dark',
+    );
+
+    // Form start.
+    echo html_writer::start_tag('form', $form_attributes);
+
+    // Textarea div.
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::tag('textarea', '', $textarea_attributes);
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+
+    // Button div.
+    echo html_writer::start_tag('div', array('class' => 'form-group row'));
+    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::empty_tag('input', $button_attributes);
+    echo html_writer::end_tag('div');
+    echo html_writer::end_tag('div');
+
+    // Form end.
+    echo html_writer::end_tag('form');
+
 }
 
 function submit_answer_form(){
