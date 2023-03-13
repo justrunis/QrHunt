@@ -143,7 +143,18 @@ function display_qr_code_image($imagePath) {
     }
 }
 
+function diplay_clue_text($moduleinstance){
+    $start_text = get_string('qrhuntcluestarttext', 'mod_qrhunt');
+    $clue_text = $moduleinstance->cluetext;
 
+    echo html_writer::start_tag('h1');
+    echo $start_text;
+    echo html_writer::end_tag('h1');
+
+    echo html_writer::start_tag('p');
+    echo $clue_text;
+    echo html_writer::end_tag('p');
+}
 
 function insert_user_activity_data($DB, $moduleinstance, $answer) {
     // Get the user ID and activity ID.
@@ -171,7 +182,7 @@ function insert_user_activity_data($DB, $moduleinstance, $answer) {
 
 }
 
-function display_answer_update_form(){
+function display_answer_update_form($moduleinstance){
     // Form attributes.
     $form_attributes = array(
         'method' => 'post',
@@ -200,7 +211,7 @@ function display_answer_update_form(){
     // Textarea div.
     echo html_writer::start_tag('div', array('class' => 'form-group row'));
     echo html_writer::start_tag('div', array('class' => 'col-md-12'));
-    echo html_writer::tag('textarea', '', $textarea_attributes);
+    echo html_writer::tag('textarea', $moduleinstance->answer, $textarea_attributes);
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
     
@@ -216,7 +227,7 @@ function display_answer_update_form(){
     
 }
 
-function display_clue_update_form(){
+function display_clue_update_form($moduleinstance){
 
     // Form attributes.
     $form_attributes = array(
@@ -230,7 +241,8 @@ function display_clue_update_form(){
         'placeholder' => get_string('entercluetext', 'mod_qrhunt'),
         'rows' => '5',
         'cols' => '50',
-    );
+    );    
+    
 
     // Submit button attributes.
     $button_attributes = array(
@@ -245,7 +257,7 @@ function display_clue_update_form(){
     // Textarea div.
     echo html_writer::start_tag('div', array('class' => 'form-group row'));
     echo html_writer::start_tag('div', array('class' => 'col-md-12'));
-    echo html_writer::tag('textarea', '', $textarea_attributes);
+    echo html_writer::tag('textarea', $moduleinstance->cluetext, $textarea_attributes);
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
 
@@ -314,21 +326,29 @@ function create_button_to_play($cm) {
     echo html_writer::end_tag('a');    
 }
 
-function create_button_to_home() {
+function create_button_to_home($needMargin) {
     global $CFG;
 
     $url = new moodle_url($CFG->wwwroot);
-    $link_attributes = array(
-        'href' => $url->out(),
-        'class' => 'btn btn-dark',
-    );
+    if($needMargin){
+        $link_attributes = array(
+            'href' => $url->out(),
+            'class' => 'btn btn-dark',
+            'style' => 'margin-left: 20px;',
+        );
+    }
+    else{
+        $link_attributes = array(
+            'href' => $url->out(),
+            'class' => 'btn btn-dark',
+        );
+    }
     
-    echo html_writer::empty_tag('br');
-    echo html_writer::empty_tag('br');
     echo html_writer::start_tag('a', $link_attributes);
     echo get_string('back', 'mod_qrhunt');
     echo html_writer::end_tag('a');
 }
+
 
 function has_user_answered_correctly($DB, $USER, $moduleinstance){
     $records = $DB->get_records('qrhunt_user_activity', array('userid' => $USER->id));

@@ -66,7 +66,8 @@ $PAGE->set_context($modulecontext);
 echo $OUTPUT->header();
 
 // Display the clue
-echo '<h1>' . get_string('qrhuntcluestarttext', 'mod_qrhunt') . ' ' . $moduleinstance->cluetext . '</h1>';
+diplay_clue_text($moduleinstance);
+
 // Get QR code data.
 $qrCodeData = $moduleinstance->answer;
 // Name of generated QR code file
@@ -79,11 +80,12 @@ display_qr_code_image($imagePath);
 
 // Display answer input forms for admin user
 if(is_siteadmin()){
-    display_answer_update_form();
-    display_clue_update_form();
+    display_answer_update_form($moduleinstance);
+    display_clue_update_form($moduleinstance);
 }
 
 create_button_to_play($cm);
+create_button_to_home(true);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['answer'])) {

@@ -59,13 +59,79 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
+$PAGE->requires->jquery();
+$PAGE->requires->js('/mod/qrhunt/JavaScript/qrscanner.js');
+
 echo $OUTPUT->header();
 
 // Start time
 $starttimestamp = time();
 
 // Display the clue
-echo '<h1>' . get_string('qrhuntcluestarttext', 'mod_qrhunt') . ' ' . $moduleinstance->cluetext . '</h1>';
+diplay_clue_text($moduleinstance);
+
+// Add the id attribute to the qr-scanner div element.
+?>
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+<script src="JavaScript/qrcodejs-master/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<button class="btn btn-dark" id="start-camera" style="display:none;">Start Camera</button>
+
+<div>
+  <video id="video" width="300" height="225"></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <div id="result"></div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const result = document.getElementById('result');
+const startCameraBtn = document.getElementById('start-camera');
+
+let hasFinished = false;
+let stream = null;
+
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished == false) {
+  startCameraBtn.style.display = "block"; // show the start camera button
+  startCameraBtn.addEventListener('click', function() {
+    startCameraBtn.style.display = "none"; // hide the start camera button
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(mediaStream) {
+      stream = mediaStream;
+      video.srcObject = stream;
+      video.play();
+      console.log('Displaying the camera feed')
+      video.addEventListener('play', function() {
+        const ctx = canvas.getContext('2d');
+        setInterval(function() {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            console.log('QR code detected:', code.data);
+            result.innerText = "Scanned text: " + code.data;
+            hasFinished = true;
+            video.style.display = 'none';
+            stream.getTracks().forEach(function(track) {
+              track.stop();
+            });
+            // post the scanned text to PHP
+            $.post("play.php", { scannedText: code.data });
+          }
+        }, 100);
+      }, false);
+    }).catch(function(error) {
+      console.error('Failed to access device camera', error);
+    });
+  });
+}
+</script>
+
+<?php
+
 
 $hasAnsweredCorrectly = has_user_answered_correctly($DB, $USER, $moduleinstance);
 
@@ -105,11 +171,11 @@ if(!$hasAnsweredCorrectly){
         echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
         unset($_SESSION['message']);
     }
-    create_button_to_home();
+    create_button_to_home(false);
 }
 else{
     echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
-    create_button_to_home();
+    create_button_to_home(false);
 }
 
 echo $OUTPUT->footer();
