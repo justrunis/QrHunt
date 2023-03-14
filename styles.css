@@ -1,12 +1,13 @@
 .custom-button-class {
-    background-color: #000;
-    color: #fff;
-    border-radius: 4px;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-size: 50px;
-  }
+  background-color: #000;
+  color: #fff;
+  margin: 15px;
+}
   
-  .custom-button:hover {
-    background-color: #333;
-  }
+.custom-button:hover {
+  background-color: #333;
+}
+
+#page-mod-qrhunt-view .completion-info {
+  display: none;
+}

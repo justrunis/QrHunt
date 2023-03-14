@@ -1,3 +1,11 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var completionCheckbox = document.getElementById("id_completion");
+        if (completionCheckbox) {
+            completionCheckbox.disabled = true;
+        }
+    });
+</script>
 <?php
 // This file is part of Moodle - https://moodle.org/
 //
@@ -58,6 +66,7 @@ $event->add_record_snapshot('qrhunt', $moduleinstance);
 $event->trigger();
 
 $PAGE->set_url('/mod/qrhunt/view.php', array('id' => $cm->id));
+$courseid = $PAGE->course->id;
 
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -66,7 +75,7 @@ $PAGE->set_context($modulecontext);
 echo $OUTPUT->header();
 
 // Display the clue
-diplay_clue_text($moduleinstance);
+//diplay_clue_text($moduleinstance);
 
 // Get QR code data.
 $qrCodeData = $moduleinstance->answer;
@@ -80,12 +89,10 @@ display_qr_code_image($imagePath);
 
 // Display answer input forms for admin user
 if(is_siteadmin()){
-    display_answer_update_form($moduleinstance);
-    display_clue_update_form($moduleinstance);
+    display_answer_update_form($courseid, $moduleinstance, $cm);
+    //display_clue_update_form($moduleinstance);
 }
 
-create_button_to_play($cm);
-create_button_to_home(true);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['answer'])) {

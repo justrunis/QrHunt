@@ -32,7 +32,10 @@ $string['no$qrhuntinstances'] = ' No QR Hunt instances';
 $string['qrhuntname'] = 'QR Hunt name';
 $string['qrhuntsettings'] = 'QR Hunt settings';
 $string['qrhuntname_help'] = 'Choose a name for you Qr Hunt';
-$string['alwaysshowdescription'] = 'Alyaws show description';
+$string['alwaysshowdescription'] = 'Always show description';
+$string['grading'] = 'Grading';
+$string['grade'] = 'Grade';
+$string['gradetopass'] = 'Grade to pass';
 
 $string['qrhuntfieldset'] = 'Availability';
 $string['allowattemptsfromdate'] = 'Allow attempts from';

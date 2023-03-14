@@ -143,46 +143,55 @@ function display_qr_code_image($imagePath) {
     }
 }
 
-function diplay_clue_text($moduleinstance){
-    $start_text = get_string('qrhuntcluestarttext', 'mod_qrhunt');
-    $clue_text = $moduleinstance->cluetext;
+function display_camera(){
+    ?>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+    <script src="JavaScript/qrcodejs-master/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    echo html_writer::start_tag('h1');
-    echo $start_text;
-    echo html_writer::end_tag('h1');
+    <button class="btn btn-dark" id="start-camera" style="display:none; margin:15px;">Start Camera</button>
 
-    echo html_writer::start_tag('p');
-    echo $clue_text;
-    echo html_writer::end_tag('p');
+    <div id='video-container' style="display: none;">
+      <video id="video" width="300" height="225"></video>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <h3 style="display: none;" id="result"></h3>
+    </div>
+
+    <script src="JavaScript/qrscanner.js"></script>
+
+    <?php
 }
 
-function insert_user_activity_data($DB, $moduleinstance, $answer) {
-    // Get the user ID and activity ID.
-    global $USER;
-    $userid = $USER->id;
-    $activityid = $moduleinstance->id;
+function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm) {
+      
+        // Insert the user's answer into the qrhunt_user_activity table.
+        $user_activity = new stdClass();
+        $user_activity->activityid = $moduleinstance->id;
+        $user_activity->userid = $USER->id;
+        $user_activity->answer = $answer;
+        $user_activity->answertimestamp = time();
+        $user_activity->starttime = $starttimestamp;
+        $user_activity->time_taken = $starttimestamp - time();
 
-    // Insert the user activity data into the database.
-    $qrhunt_user_activity = new stdClass();
-    $qrhunt_user_activity->userid = $userid;
-    $qrhunt_user_activity->activityid = $activityid;
-    $qrhunt_user_activity->answer = $answer;
-    $qrhunt_user_activity->answertimestamp = time();
-
-    // Compare the submitted answer with the QR code data.
-    if ($answer == $moduleinstance->intro) {
-        $qrhunt_user_activity->correctanswer = 1;
-        $DB->insert_record('qrhunt_user_activity', $qrhunt_user_activity);
-        echo '<br>' . get_string('correctanswermessage', 'mod_qrhunt') . '';
-    } else {
-        $qrhunt_user_activity->correctanswer = 0;
-        $DB->insert_record('qrhunt_user_activity', $qrhunt_user_activity);
-        echo '<br>' . get_string('incorrectanswermessage', 'mod_qrhunt') . '';
-    }
+        // Compare the user's answer with the correct answer in the qrhunt table.
+        $qrhunt = $DB->get_record('qrhunt', array('id' => $moduleinstance->id));
+        if ($answer == $qrhunt->answer) {
+            $user_activity->correctanswer = 1;
+            $DB->insert_record('qrhunt_user_activity', $user_activity);
+        } else {
+            $user_activity->correctanswer = 0;
+            $DB->insert_record('qrhunt_user_activity', $user_activity);
+            $_SESSION['message'] = get_string('incorrectanswermessage', 'mod_qrhunt');
+        }
+        
+        // Redirect the user to the same page after the form has been submitted.
+        redirect(new moodle_url('/mod/qrhunt/play.php', array('id' => $cm->id)));
 
 }
 
-function display_answer_update_form($moduleinstance){
+function display_answer_update_form($courseid, $moduleinstance, $cm){
     // Form attributes.
     $form_attributes = array(
         'method' => 'post',
@@ -202,7 +211,8 @@ function display_answer_update_form($moduleinstance){
     $input_attributes = array(
         'type' => 'submit',
         'value' => get_string('refreshqr', 'mod_qrhunt'),
-        'class' => 'btn btn-dark'
+        'class' => 'btn btn-dark',
+        'style' => 'margin-right: 20px',
     );
     
     // Form start.
@@ -219,58 +229,16 @@ function display_answer_update_form($moduleinstance){
     echo html_writer::start_tag('div', array('class' => 'form-group row'));
     echo html_writer::start_tag('div', array('class' => 'col-md-12'));
     echo html_writer::empty_tag('input', $input_attributes);
+
+    create_button_to_play($cm);
+    create_button_to_course($courseid, true);
+
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
     
     // Form end.
     echo html_writer::end_tag('form');     
     
-}
-
-function display_clue_update_form($moduleinstance){
-
-    // Form attributes.
-    $form_attributes = array(
-        'method' => 'post',
-    );
-
-    // Textarea attributes.
-    $textarea_attributes = array(
-        'name' => 'cluetext',
-        'id' => 'cluetext',
-        'placeholder' => get_string('entercluetext', 'mod_qrhunt'),
-        'rows' => '5',
-        'cols' => '50',
-    );    
-    
-
-    // Submit button attributes.
-    $button_attributes = array(
-        'type' => 'submit',
-        'value' => get_string('updatecluetext', 'mod_qrhunt'),
-        'class' => 'btn btn-dark',
-    );
-
-    // Form start.
-    echo html_writer::start_tag('form', $form_attributes);
-
-    // Textarea div.
-    echo html_writer::start_tag('div', array('class' => 'form-group row'));
-    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
-    echo html_writer::tag('textarea', $moduleinstance->cluetext, $textarea_attributes);
-    echo html_writer::end_tag('div');
-    echo html_writer::end_tag('div');
-
-    // Button div.
-    echo html_writer::start_tag('div', array('class' => 'form-group row'));
-    echo html_writer::start_tag('div', array('class' => 'col-md-12'));
-    echo html_writer::empty_tag('input', $button_attributes);
-    echo html_writer::end_tag('div');
-    echo html_writer::end_tag('div');
-
-    // Form end.
-    echo html_writer::end_tag('form');
-
 }
 
 function display_user_submit_form(){
@@ -330,6 +298,29 @@ function create_button_to_home($needMargin) {
     global $CFG;
 
     $url = new moodle_url($CFG->wwwroot);
+    if($needMargin){
+        $link_attributes = array(
+            'href' => $url->out(),
+            'class' => 'btn btn-dark',
+            'style' => 'margin-left: 20px;',
+        );
+    }
+    else{
+        $link_attributes = array(
+            'href' => $url->out(),
+            'class' => 'btn btn-dark',
+        );
+    }
+    
+    echo html_writer::start_tag('a', $link_attributes);
+    echo get_string('back', 'mod_qrhunt');
+    echo html_writer::end_tag('a');
+}
+
+function create_button_to_course($courseid, $needMargin) {
+    global $CFG;
+
+    $url = new moodle_url('/course/view.php', array('id' => $courseid));
     if($needMargin){
         $link_attributes = array(
             'href' => $url->out(),

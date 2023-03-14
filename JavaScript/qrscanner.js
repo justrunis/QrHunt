@@ -22,33 +22,54 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const result = document.getElementById('result');
+const startCameraBtn = document.getElementById('start-camera');
+
+const videoContainer = document.getElementById('video-container');
+const currentUrl = window.location.href; // get current URL
+const urlParams = new URLSearchParams(window.location.search); // parse query string
+const currentId = urlParams.get('id'); // get value of id parameter
+
+// construct the URL for the POST request
+const url = `${currentUrl.substring(0, currentUrl.lastIndexOf('/'))}/play.php?id=${currentId}`;
+
 let hasFinished = false;
 let stream = null;
 
+console.log(navigator.mediaDevices);
+console.log(navigator.mediaDevices.getUserMedia);
+console.log(hasFinished);
+
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished == false) {
-  navigator.mediaDevices.getUserMedia({ video: true }).then(function(mediaStream) {
-    stream = mediaStream;
-    video.srcObject = stream;
-    video.play();
-    console.log('Displaying the camera feed')
-    video.addEventListener('play', function() {
-      const ctx = canvas.getContext('2d');
-      setInterval(function() {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-        if (code) {
-          console.log('QR code detected:', code.data);
-          result.innerText = code.data;
-          hasFinished = true;
-          video.style.display = 'none';
-          stream.getTracks().forEach(function(track) {
-            track.stop();
-          });
-        }
-      }, 100);
-    }, false);
-  }).catch(function(error) {
-    console.error('Failed to access device camera', error);
+  startCameraBtn.style.display = "block"; // show the start camera button
+  startCameraBtn.addEventListener('click', function() {
+    videoContainer.style.display = "block";
+    startCameraBtn.style.display = "none"; // hide the start camera button
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function(mediaStream) {
+      stream = mediaStream;
+      video.srcObject = stream;
+      video.play();
+      console.log('Displaying the camera feed')
+      video.addEventListener('play', function() {
+        const ctx = canvas.getContext('2d');
+        setInterval(function() {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            console.log('QR code detected:', code.data);
+            result.innerText = code.data;
+            if (video.style.display !== 'none') {
+              video.style.display = 'none';
+              stream.getTracks().forEach(function(track) {
+                track.stop();
+              });
+            }
+            $('#user_answer').val(code.data);
+          }
+        }, 100);
+      }, false);
+    }).catch(function(error) {
+      console.error('Failed to access device camera', error);
+    });
   });
 }

@@ -23,6 +23,7 @@
  */
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 require_once("$CFG->dirroot/mod/qrhunt/lib.php");
+require_once($CFG->libdir . '/completionlib.php');
 
 // Course module id.
 $id = optional_param('id', 0, PARAM_INT);
@@ -54,6 +55,7 @@ $event->add_record_snapshot('qrhunt', $moduleinstance);
 $event->trigger();
 
 $PAGE->set_url('/mod/qrhunt/view.php', array('id' => $cm->id));
+$courseid = $PAGE->course->id;
 
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -67,115 +69,40 @@ echo $OUTPUT->header();
 // Start time
 $starttimestamp = time();
 
-// Display the clue
-diplay_clue_text($moduleinstance);
-
-// Add the id attribute to the qr-scanner div element.
-?>
-<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-<script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
-<script src="JavaScript/qrcodejs-master/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<button class="btn btn-dark" id="start-camera" style="display:none;">Start Camera</button>
-
-<div>
-  <video id="video" width="300" height="225"></video>
-  <canvas id="canvas" style="display:none;"></canvas>
-  <div id="result"></div>
-</div>
-
-<script>
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const result = document.getElementById('result');
-const startCameraBtn = document.getElementById('start-camera');
-
-let hasFinished = false;
-let stream = null;
-
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished == false) {
-  startCameraBtn.style.display = "block"; // show the start camera button
-  startCameraBtn.addEventListener('click', function() {
-    startCameraBtn.style.display = "none"; // hide the start camera button
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(mediaStream) {
-      stream = mediaStream;
-      video.srcObject = stream;
-      video.play();
-      console.log('Displaying the camera feed')
-      video.addEventListener('play', function() {
-        const ctx = canvas.getContext('2d');
-        setInterval(function() {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height);
-          if (code) {
-            console.log('QR code detected:', code.data);
-            result.innerText = "Scanned text: " + code.data;
-            hasFinished = true;
-            video.style.display = 'none';
-            stream.getTracks().forEach(function(track) {
-              track.stop();
-            });
-            // post the scanned text to PHP
-            $.post("play.php", { scannedText: code.data });
-          }
-        }, 100);
-      }, false);
-    }).catch(function(error) {
-      console.error('Failed to access device camera', error);
-    });
-  });
-}
-</script>
-
-<?php
-
+$hasSubmitedQR = false;
 
 $hasAnsweredCorrectly = has_user_answered_correctly($DB, $USER, $moduleinstance);
 
 if(!$hasAnsweredCorrectly){
-    // Display form to submit answers
-    display_user_submit_form();
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
-        // Get the submitted answer.
-        $answer = $_POST['user_answer'];
-        
-        // Insert the user's answer into the qrhunt_user_activity table.
-        $user_activity = new stdClass();
-        $user_activity->activityid = $moduleinstance->id;
-        $user_activity->userid = $USER->id;
-        $user_activity->answer = $answer;
-        $user_activity->answertimestamp = time();
-        $user_activity->starttime = $starttimestamp;
-        $user_activity->time_taken = $starttimestamp - time();
+  display_camera();
+  // Display form to submit answers
+  display_user_submit_form();
 
-        // Compare the user's answer with the correct answer in the qrhunt table.
-        $qrhunt = $DB->get_record('qrhunt', array('id' => $moduleinstance->id));
-        if ($answer == $qrhunt->answer) {
-            $user_activity->correctanswer = 1;
-            $DB->insert_record('qrhunt_user_activity', $user_activity);
-        } else {
-            $user_activity->correctanswer = 0;
-            $DB->insert_record('qrhunt_user_activity', $user_activity);
-            $_SESSION['message'] = get_string('incorrectanswermessage', 'mod_qrhunt');
-        }
-        
-        // Redirect the user to the same page after the form has been submitted.
-        redirect(new moodle_url('/mod/qrhunt/play.php', array('id' => $cm->id)));
-    }
+  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
+    // Get the submitted answer.
+    $answer = $_POST['user_answer'];
+    
+    insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm);
+  }
 
-    if (isset($_SESSION['message'])) {
-        echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
-        unset($_SESSION['message']);
-    }
-    create_button_to_home(false);
+
+  if (isset($_SESSION['message'])) {
+    echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
+    unset($_SESSION['message']);
+  }
+  //create_button_to_home(false);
+  create_button_to_course($courseid, false);
 }
 else{
     echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
-    create_button_to_home(false);
+    //create_button_to_home(false);
+    create_button_to_course($courseid, false);
+
+    $completion = new completion_info($PAGE->course);
+    if ($completion->is_enabled($cm)) {
+        $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
+    }
 }
 
 echo $OUTPUT->footer();
