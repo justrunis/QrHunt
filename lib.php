@@ -106,6 +106,11 @@ function generate_qr_code_data($data, $size = 10, $margin = 1, $errorCorrection 
     return $data;
 }
 
+/**
+ * @param $qrCodeData
+ * @param $imageName
+ * @return string
+ */
 function generate_qr_code_image($qrCodeData, $imageName) {
     $imagePath = __DIR__ . '/qrcodes/' . $imageName . '.png';
 

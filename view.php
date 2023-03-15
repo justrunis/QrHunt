@@ -1,11 +1,3 @@
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var completionCheckbox = document.getElementById("id_completion");
-        if (completionCheckbox) {
-            completionCheckbox.disabled = true;
-        }
-    });
-</script>
 <?php
 // This file is part of Moodle - https://moodle.org/
 //
