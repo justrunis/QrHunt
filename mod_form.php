@@ -91,11 +91,12 @@ class mod_qrhunt_mod_form extends moodleform_mod {
         $mform->setType('grade', PARAM_INT);
         $mform->addRule('grade', get_string('required'), 'required', null, 'client');
 
-        $mform->disabledIf('completion', '1', 'eq');
 
 
         // Add standard elements.
         $this->standard_coursemodule_elements();
+
+        $mform->disabledIf('completion', '1', 'eq');
 
         // Add standard buttons.
         $this->add_action_buttons();

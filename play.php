@@ -92,6 +92,10 @@ if(!$hasAnsweredCorrectly){
     unset($_SESSION['message']);
   }
   //create_button_to_home(false);
+  $completion = new completion_info($PAGE->course);
+  if ($completion->is_enabled($cm)) {
+      $completion->update_state($cm, COMPLETION_INCOMPLETE, $USER->id);
+  }
   create_button_to_course($courseid, false);
 }
 else{

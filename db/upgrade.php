@@ -102,5 +102,29 @@ function xmldb_qrhunt_upgrade($oldversion) {
         // Qrhunt savepoint reached.
         upgrade_mod_savepoint(true, 2023030807, 'qrhunt');
     }
+    if ($oldversion < 2023030808) {
+
+        // Define table qrhunt_activity_completion to be created.
+        $table = new xmldb_table('qrhunt_activity_completion');
+
+        // Adding fields to table qrhunt_activity_completion.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('activity_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('completed', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecompleted', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table qrhunt_activity_completion.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for qrhunt_activity_completion.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Qrhunt savepoint reached.
+        upgrade_mod_savepoint(true, 2023030808, 'qrhunt');
+    }
+
     return true;
 }

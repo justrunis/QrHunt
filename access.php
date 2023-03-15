@@ -22,9 +22,8 @@
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $capabilities = array(
- 
     'mod/qrhunt:addinstance' => array(
-        'riskbitmask' => RISK_XSS,
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
         'archetypes' => array(
@@ -32,5 +31,6 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
- 
+    // Other capabilities for the module...
 );
+

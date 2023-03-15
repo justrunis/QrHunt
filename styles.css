@@ -11,3 +11,7 @@
 #page-mod-qrhunt-view .completion-info {
   display: none;
 }
+
+.completion-link {
+  display: none;
+}
