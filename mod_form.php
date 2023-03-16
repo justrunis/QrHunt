@@ -92,7 +92,6 @@ class mod_qrhunt_mod_form extends moodleform_mod {
         $mform->addRule('grade', get_string('required'), 'required', null, 'client');
 
 
-
         // Add standard elements.
         $this->standard_coursemodule_elements();
 

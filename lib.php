@@ -31,6 +31,7 @@
 
 function qrhunt_supports($feature) {
     switch ($feature) {
+        case FEATURE_GRADE_HAS_GRADE:
         case FEATURE_MOD_INTRO:
             return true;
         default:
@@ -356,4 +357,38 @@ function has_user_answered_correctly($DB, $USER, $moduleinstance){
         }
     }
     return false;
+}
+
+function completion_info_course($course, $user, $modinfo, $cmid) {
+    global $DB, $USER;
+    $completion = new completion_info($course);
+    $mod = $modinfo->get_cm($cmid);
+    $moduleinstance = $modinfo->get_instance($mod->id);
+
+    $is_completed = false;
+
+    // Check if user has viewed the task
+    if ($completion->is_enabled($mod) && $completion->is_viewed($mod)) {
+        // Check if user has answered the question correctly
+        if (has_user_answered_correctly($DB, $USER, $moduleinstance)) {
+            $is_completed = true;
+        }
+    }
+
+    $output = '';
+
+    if ($is_completed) {
+        $output .= '<i class="fa fa-check"></i> Completed';
+    } else {
+        $output .= '<i class="fa fa-times"></i> Incomplete';
+    }
+
+    return $output;
+}
+
+function qrhunt_mod_instance_can_be_completed($cm, $id) {
+
+    // Set the completion status for this user
+    $completion = new completion_info(get_course($cm->course));
+    $completion->update_state($cm, COMPLETION_COMPLETE, intval($id));
 }

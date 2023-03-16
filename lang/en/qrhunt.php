@@ -71,3 +71,9 @@ $string['submitanswer'] = 'Submit answer';
 
 $string['play'] = 'Play';
 $string['back'] = 'Back to start';
+
+$string['completion'] = 'Set completion';
+$string['completionnone'] = 'None';
+$string['completionmanual'] = 'Manual completion';
+$string['completionautomatic'] = 'Automatic completion';
+$string['custom_completion_condition'] = 'Custom completion condition';

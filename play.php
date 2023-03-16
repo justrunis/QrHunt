@@ -100,13 +100,11 @@ if(!$hasAnsweredCorrectly){
 }
 else{
     echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
-    //create_button_to_home(false);
+
+
     create_button_to_course($courseid, false);
 
-    $completion = new completion_info($PAGE->course);
-    if ($completion->is_enabled($cm)) {
-        $completion->update_state($cm, COMPLETION_COMPLETE, $USER->id);
-    }
+    qrhunt_mod_instance_can_be_completed($cm, $USER->id);
 }
 
 echo $OUTPUT->footer();
