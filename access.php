@@ -31,6 +31,25 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
+    'mod/qrhunt:view' => array(
+        'riskbitmask' => RISK_SPAM | RISK_PERSONAL | RISK_CONFIG,
+        'captype'     => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'legacy'      => array(
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW
+        )
+    ),
+    'mod/qrhunt:grade' => array(
+        'riskbitmask' => RISK_SPAM | RISK_PERSONAL | RISK_CONFIG,
+        'captype'     => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'legacy'      => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW
+        )
+    )
     // Other capabilities for the module...
 );
 

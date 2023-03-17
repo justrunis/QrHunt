@@ -28,10 +28,11 @@
  * @param string $feature Constant representing the feature.
  * @return true | null True if the feature is supported, null otherwise.
  */
-
+require_once($CFG->libdir . '/gradelib.php');
 function qrhunt_supports($feature) {
     switch ($feature) {
         case FEATURE_GRADE_HAS_GRADE:
+        case FEATURE_GRADE_OUTCOMES:
         case FEATURE_MOD_INTRO:
             return true;
         default:
@@ -391,4 +392,163 @@ function qrhunt_mod_instance_can_be_completed($cm, $id) {
     // Set the completion status for this user
     $completion = new completion_info(get_course($cm->course));
     $completion->update_state($cm, COMPLETION_COMPLETE, intval($id));
+}
+
+function qrhunt_grade_item_update($qrhunt, $grades=NULL) {
+    global $CFG;
+    if (!function_exists('grade_update')) { //workaround for buggy PHP versions
+        require_once($CFG->libdir.'/gradelib.php');
+    }
+
+    $params = array('itemname'=>$qrhunt->name, 'idnumber'=>$qrhunt->id);
+
+    if ($qrhunt->answer == NULL) {
+        $params['gradetype'] = GRADE_TYPE_NONE;
+
+    } else if ($qrhunt->answer != NULL) {
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax']  = 10;
+        $params['grademin']  = 0;
+        $params['rawgrade']  = 10;
+        $params['finalgrade']  = 10;
+    }
+
+    if ($grades  === 'reset') {
+        $params['reset'] = true;
+        $grades = NULL;
+    }
+    $grades_modified = array();
+    foreach ($grades as $grade) {
+        $grades_modified[$grade->userid] = array('userid' => $grade->userid, 'grade' => (int) $grade->grade);
+    }
+    //var_dump($grades_modified);
+    return grade_update('mod/qrhunt', $qrhunt->course, 'mod', 'qrhunt', $qrhunt->id, 0, $grades_modified, $params);
+
+}
+
+function qrhunt_update_grades($qrhunt, $userid=0, $nullifnone=true) {
+    global $CFG, $DB;
+    require_once($CFG->libdir.'/gradelib.php');
+
+    if ($qrhunt->answer == NULL) {
+        qrhunt_grade_item_update($qrhunt);
+
+    } else if ($grades =  qrhunt_get_user_grades($qrhunt, $userid)) {
+        qrhunt_grade_item_update($qrhunt, $grades);
+
+    } else if ($userid and $nullifnone) {
+        $grade = new stdClass();
+        $grade->userid   = $userid;
+        $grade->rawgrade = NULL;
+        qrhunt_grade_item_update($qrhunt, $grade);
+
+    } else {
+        qrhunt_grade_item_update($qrhunt);
+    }
+}
+
+function qrhunt_get_user_grades($qrhunt, $userid) {
+    global $DB;
+
+    $sql = "SELECT * 
+            FROM {qrhunt_grades} 
+            WHERE userid = ? 
+              AND qrhunt = ?";
+
+    $userid = intval($userid); // make sure $userid is an integer
+    $qrhunt = intval($qrhunt->id); // make sure $qrhunt->id is an integer
+
+    if (!$userid || !$qrhunt) {
+        return false; // return false if either $userid or $qrhuntid is not defined or has an invalid value
+    }
+
+    $params = array($userid, $qrhunt);
+
+    $records = $DB->get_records_sql($sql, $params);
+
+    if (!$records) {
+        return array(); // return an empty array if no records were found
+    }
+    return $records;
+}
+
+function insert_grades_to_grade_table($qrhunt, $userid, $grade){
+    global $CFG, $DB;
+
+    $existing_record = $DB->get_records('qrhunt_grades', array('qrhunt' => $qrhunt, 'userid' => $userid));
+    if ($existing_record) {
+        // Record already exists, do not insert new data
+        return;
+    }
+
+    $sql = 'INSERT INTO {qrhunt_grades} (qrhunt, userid, grade, timemodified)
+            VALUES (?, ?, ?, ?)';
+    $params = array($qrhunt, $userid, $grade, time());
+    $DB->execute($sql, $params);
+}
+
+/**
+ * Set final grade for a given user and item.
+ *
+ * @param int $item_id ID of the grade item.
+ * @param int $user_id ID of the user.
+ * @param float $final_grade Final grade to set for the user and item.
+ */
+function set_final_grade($item_id, $user_id, $final_grade) {
+    global $DB;
+
+    $item = $DB->get_record('grade_items', array('id' => $item_id));
+    if (!$item) {
+        throw new moodle_exception('Invalid grade item ID');
+    }
+
+    $user = $DB->get_record('user', array('id' => $user_id));
+    if (!$user) {
+        throw new moodle_exception('Invalid user ID');
+    }
+
+    // Check if the user already has a grade for the item.
+    $grade = $DB->get_record('grade_grades', array('itemid' => $item_id, 'userid' => $user_id));
+    if (!$grade) {
+        throw new moodle_exception('Grade record not found');
+    }
+
+    // Verify that the user's grade is not empty
+    if (empty($grade->rawgrade)) {
+        //return false; // User's grade hasn't been graded yet
+        $grade->rawgrade = $final_grade;
+
+        // Set the final grade for the user and item.
+        $grade->finalgrade = $final_grade;
+        $grade->finalmodified = time();
+        $grade->hidden = 0;
+        $grade->locked = 0;
+        $DB->update_record('grade_grades', $grade);
+
+        // Recalculate the user's course grade.
+        $course = $DB->get_record('course', array('id' => $item->courseid));
+
+        if (!$course) {
+            throw new moodle_exception('Invalid course ID');
+        }
+    }
+    //var_dump($grade);
+
+}
+
+
+
+function qrhunt_reset_gradebook($courseid, $type='') {
+    global $CFG, $DB;
+
+    $qrhunts = $DB->get_records_sql("
+            SELECT q.*, cm.idnumber as cmidnumber, q.course as courseid
+            FROM {modules} m
+            JOIN {course_modules} cm ON m.id = cm.module
+            JOIN {quiz} q ON cm.instance = q.id
+            WHERE m.name = 'qrhunt' AND cm.course = ?", array($courseid));
+
+    foreach ($qrhunts as $qrhunt) {
+        qrhunt_grade_item_update($qrhunt, 'reset');
+    }
 }

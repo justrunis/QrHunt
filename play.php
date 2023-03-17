@@ -105,6 +105,15 @@ else{
     create_button_to_course($courseid, false);
 
     qrhunt_mod_instance_can_be_completed($cm, $USER->id);
+
+
+    insert_grades_to_grade_table($moduleinstance->id, $USER->id, 10);
+
+
+
+    $temp = qrhunt_update_grades($moduleinstance, $USER->id);
+    set_final_grade($moduleinstance->id, $USER->id, 10);
+    //var_dump($temp);
 }
 
 echo $OUTPUT->footer();

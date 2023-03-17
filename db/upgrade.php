@@ -125,6 +125,34 @@ function xmldb_qrhunt_upgrade($oldversion) {
         // Qrhunt savepoint reached.
         upgrade_mod_savepoint(true, 2023030808, 'qrhunt');
     }
+    if ($oldversion < 2023030810) {
+
+        // Define table qrhunt_grades to be created.
+        $table = new xmldb_table('qrhunt_grades');
+
+        // Adding fields to table qrhunt_grades.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('qrhunt', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('grade', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table qrhunt_grades.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('qrhunt', XMLDB_KEY_FOREIGN, ['qrhunt'], 'qrhunt', ['id']);
+
+        // Adding indexes to table qrhunt_grades.
+        $table->add_index('userid', XMLDB_INDEX_NOTUNIQUE, ['userid']);
+
+        // Conditionally launch create table for qrhunt_grades.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Qrhunt savepoint reached.
+        upgrade_mod_savepoint(true, 2023030810, 'qrhunt');
+    }
+
 
     return true;
 }
