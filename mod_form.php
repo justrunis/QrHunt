@@ -91,6 +91,11 @@ class mod_qrhunt_mod_form extends moodleform_mod {
         $mform->setType('grade', PARAM_INT);
         $mform->addRule('grade', get_string('required'), 'required', null, 'client');
 
+        $mform->addElement('header', 'completionheader', get_string('completionheader', 'qrhunt'));
+
+        $mform->addElement('advcheckbox', 'completionansweredcorrectly', get_string('completionansweredcorrectly', 'qrhunt'), get_string('completionansweredcorrectlydesc', 'qrhunt'));
+        $mform->setDefault('completionansweredcorrectly', 1);
+        $mform->addHelpButton('completionansweredcorrectly', 'completionansweredcorrectly', 'qrhunt');
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

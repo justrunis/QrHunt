@@ -36,6 +36,10 @@ $string['alwaysshowdescription'] = 'Always show description';
 $string['grading'] = 'Grading';
 $string['grade'] = 'Grade';
 $string['gradetopass'] = 'Grade to pass';
+$string['completionheader'] = 'Qr hunt completion';
+$string['completionansweredcorrectly'] = 'Completion answered correctly';
+$string['completionansweredcorrectlydesc'] = 'Track';
+$string['completionansweredcorrectly_help'] = 'Mark this to track if user has answered corectly';
 
 $string['qrhuntfieldset'] = 'Availability';
 $string['allowattemptsfromdate'] = 'Allow attempts from';
