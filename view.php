@@ -64,28 +64,6 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-echo $OUTPUT->header();
-
-// Display the clue
-//diplay_clue_text($moduleinstance);
-
-// Get QR code data.
-$qrCodeData = $moduleinstance->answer;
-// Name of generated QR code file
-$imageName = $moduleinstance->name;
-
-// Generate and save QR code image.
-$imagePath = generate_qr_code_image($qrCodeData, $imageName);
-// Display QR code image.
-display_qr_code_image($imagePath);
-
-// Display answer input forms for admin user
-if(is_siteadmin()){
-    display_answer_update_form($courseid, $moduleinstance, $cm);
-    //display_clue_update_form($moduleinstance);
-}
-
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['answer'])) {
         // Get the submitted answer.
@@ -114,5 +92,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
+echo $OUTPUT->header();
+
+// Get QR code data.
+$qrCodeData = $moduleinstance->answer;
+// Name of generated QR code file
+$imageName = $moduleinstance->name;
+
+// Generate and save QR code image.
+$imagePath = generate_qr_code_image($qrCodeData, $imageName);
+// Display QR code image.
+display_qr_code_image($imagePath);
+
+// Display answer input forms for admin user
+if(is_siteadmin()){
+    display_answer_update_form($courseid, $moduleinstance, $cm);
+    //display_clue_update_form($moduleinstance);
+}
 
 echo $OUTPUT->footer();

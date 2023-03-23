@@ -64,10 +64,19 @@ $PAGE->set_context($modulecontext);
 $PAGE->requires->jquery();
 $PAGE->requires->js('/mod/qrhunt/JavaScript/qrscanner.js');
 
-echo $OUTPUT->header();
-
 // Start time
 $starttimestamp = time();
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
+    // Get the submitted answer.
+    $answer = $_POST['user_answer'];
+
+    insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE);
+
+    redirect($FULLME);
+}
+
+echo $OUTPUT->header();
 
 $hasSubmitedQR = false;
 
@@ -75,45 +84,26 @@ $hasAnsweredCorrectly = has_user_answered_correctly($DB, $USER, $moduleinstance)
 
 if(!$hasAnsweredCorrectly){
 
-  display_camera();
-  // Display form to submit answers
-  display_user_submit_form();
+    if (isset($_SESSION['message'])) {
+        echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
+        unset($_SESSION['message']);
+    }
+    display_camera();
+    // Display form to submit answers
+    display_user_submit_form($courseid);
 
-  if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
-    // Get the submitted answer.
-    $answer = $_POST['user_answer'];
-    
-    insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm);
-  }
-
-
-  if (isset($_SESSION['message'])) {
-    echo '<div class="alert alert-danger">' . $_SESSION['message'] . '</div>';
-    unset($_SESSION['message']);
-  }
-  //create_button_to_home(false);
-  $completion = new completion_info($PAGE->course);
-  if ($completion->is_enabled($cm)) {
+    //create_button_to_home(false);
+    $completion = new completion_info($PAGE->course);
+    if ($completion->is_enabled($cm)) {
       $completion->update_state($cm, COMPLETION_INCOMPLETE, $USER->id);
-  }
-  create_button_to_course($courseid, false);
+    }
+    //create_button_to_course($courseid, false);
 }
 else{
     echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
 
-
     create_button_to_course($courseid, false);
 
-    qrhunt_mod_instance_can_be_completed($cm, $USER->id);
-
-
-    insert_grades_to_grade_table($moduleinstance->id, $USER->id, 10);
-
-
-
-    $temp = qrhunt_update_grades($moduleinstance, $USER->id);
-    set_final_grade($moduleinstance->id, $USER->id, 10);
-    //var_dump($temp);
 }
 
 echo $OUTPUT->footer();

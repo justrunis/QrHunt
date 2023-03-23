@@ -85,17 +85,10 @@ class mod_qrhunt_mod_form extends moodleform_mod {
         $mform->addHelpButton('alwaysshowdescription', 'alwaysshowdescription', 'qrhunt');
         $mform->disabledIf('alwaysshowdescription', 'allowsubmissionsfromdate[enabled]', 'notchecked');
 
-        $mform->addElement('header', 'gradeheader', get_string('grading', 'qrhunt'));
 
-        $mform->addElement('text', 'grade', get_string('gradetopass', 'qrhunt'), array('value' => 10));
-        $mform->setType('grade', PARAM_INT);
-        $mform->addRule('grade', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement('header', 'completionheader', get_string('completionheader', 'qrhunt'));
-
-        $mform->addElement('advcheckbox', 'completionansweredcorrectly', get_string('completionansweredcorrectly', 'qrhunt'), get_string('completionansweredcorrectlydesc', 'qrhunt'));
-        $mform->setDefault('completionansweredcorrectly', 1);
-        $mform->addHelpButton('completionansweredcorrectly', 'completionansweredcorrectly', 'qrhunt');
+        // Add standard grading elements.
+        $this->standard_grading_coursemodule_elements();
 
         // Add standard elements.
         $this->standard_coursemodule_elements();

@@ -158,7 +158,7 @@ function display_camera(){
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <button class="btn btn-dark" id="start-camera" style="display:none; margin:15px;">Start Camera</button>
+    <button class="btn btn-dark" id="start-camera" style="display:none; margin-top:15px; margin-bottom: 15px">Start Camera</button>
 
     <div id='video-container' style="display: none;">
       <video id="video" width="300" height="225"></video>
@@ -171,30 +171,30 @@ function display_camera(){
     <?php
 }
 
-function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm) {
+function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE) {
       
-        // Insert the user's answer into the qrhunt_user_activity table.
-        $user_activity = new stdClass();
-        $user_activity->activityid = $moduleinstance->id;
-        $user_activity->userid = $USER->id;
-        $user_activity->answer = $answer;
-        $user_activity->answertimestamp = time();
-        $user_activity->starttime = $starttimestamp;
-        $user_activity->time_taken = $starttimestamp - time();
+    // Insert the user's answer into the qrhunt_user_activity table.
+    $user_activity = new stdClass();
+    $user_activity->activityid = $moduleinstance->id;
+    $user_activity->userid = $USER->id;
+    $user_activity->answer = $answer;
+    $user_activity->answertimestamp = time();
+    $user_activity->starttime = $starttimestamp;
+    $user_activity->time_taken = $starttimestamp - time();
 
-        // Compare the user's answer with the correct answer in the qrhunt table.
-        $qrhunt = $DB->get_record('qrhunt', array('id' => $moduleinstance->id));
-        if ($answer == $qrhunt->answer) {
-            $user_activity->correctanswer = 1;
-            $DB->insert_record('qrhunt_user_activity', $user_activity);
-        } else {
-            $user_activity->correctanswer = 0;
-            $DB->insert_record('qrhunt_user_activity', $user_activity);
-            $_SESSION['message'] = get_string('incorrectanswermessage', 'mod_qrhunt');
-        }
-        
-        // Redirect the user to the same page after the form has been submitted.
-        redirect(new moodle_url('/mod/qrhunt/play.php', array('id' => $cm->id)));
+    // Compare the user's answer with the correct answer in the qrhunt table.
+    $qrhunt = $DB->get_record('qrhunt', array('id' => $moduleinstance->id));
+    if ($answer == $qrhunt->answer) {
+        $user_activity->correctanswer = 1;
+        $DB->insert_record('qrhunt_user_activity', $user_activity);
+
+        $rawgrade = 100;
+        write_qrhunt_user_grade($moduleinstance, $USER, $PAGE, $rawgrade);
+    } else {
+        $user_activity->correctanswer = 0;
+        $DB->insert_record('qrhunt_user_activity', $user_activity);
+        $_SESSION['message'] = get_string('incorrectanswermessage', 'mod_qrhunt');
+    }
 
 }
 
@@ -248,7 +248,7 @@ function display_answer_update_form($courseid, $moduleinstance, $cm){
     
 }
 
-function display_user_submit_form(){
+function display_user_submit_form($courseid){
     $form_attributes = array(
         'method' => 'post'
     );
@@ -266,7 +266,8 @@ function display_user_submit_form(){
         'type' => 'submit',
         'name' => 'submit_answer',
         'value' => get_string('submitanswer', 'mod_qrhunt'),
-        'class' => 'btn btn-dark'
+        'class' => 'btn btn-dark',
+        'style' => 'margin-right: 15px'
     );
 
     echo html_writer::start_tag('form', $form_attributes);
@@ -280,6 +281,7 @@ function display_user_submit_form(){
     echo html_writer::start_tag('div', array('class' => 'form-group row'));
     echo html_writer::start_tag('div', array('class' => 'col-md-12'));
     echo html_writer::empty_tag('input', $submit_attributes);
+    create_button_to_course($courseid, false);
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
 
@@ -392,6 +394,24 @@ function qrhunt_mod_instance_can_be_completed($cm, $id) {
     // Set the completion status for this user
     $completion = new completion_info(get_course($cm->course));
     $completion->update_state($cm, COMPLETION_COMPLETE, intval($id));
+}
+
+function write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade){
+    $item = array(
+        'itemname' => $moduleInstance->name,
+        'gradetype' => GRADE_TYPE_VALUE,
+        'grademax' => 100,
+        'grademin' => 0
+    );
+
+    $grade = array(
+        'userid' => $USER->id,
+        'rawgrade' => $rawgrade,
+        'dategraded' => (new DateTime())->getTimestamp(),
+        'datesubmitted' => (new DateTime())->getTimestamp(),
+    );
+    $grades = [$USER->id => (object)$grade];
+    return grade_update('mod_qrhunt', $PAGE->course->id, 'mod', 'qrhunt', $moduleInstance->id, 0, $grades, $item);
 }
 
 function qrhunt_grade_item_update($qrhunt, $grades=NULL) {
@@ -535,8 +555,6 @@ function set_final_grade($item_id, $user_id, $final_grade) {
     //var_dump($grade);
 
 }
-
-
 
 function qrhunt_reset_gradebook($courseid, $type='') {
     global $CFG, $DB;
