@@ -71,7 +71,8 @@ $string['successfulchange'] = 'QR code value has been changed to {$a}';
 $string['entercluetext'] = 'Enter new clue text';
 $string['updatecluetext'] = 'Update clue text';
 
-$string['enteranswer'] = 'Enter your answer';
+$string['gametitle'] = 'Submit your answer';
+$string['enteranswer'] = 'Enter your answer or scan a QR code';
 $string['submitanswer'] = 'Submit answer';
 $string['startcamera'] = 'Start camera';
 $string['stopcamera'] = 'Stop camera';

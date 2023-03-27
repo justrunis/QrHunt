@@ -129,24 +129,21 @@ function display_qr_code_image($imagePath) {
         $imageData = base64_encode($imageContent);
 
         if (is_siteadmin()) {
-            echo html_writer::tag('h1', get_string('generatedqrcode', 'mod_qrhunt'));
-            echo html_writer::tag('div', html_writer::empty_tag('img', array('src' => 'data:image/png;base64,' . $imageData)));
+            echo html_writer::tag('h1', get_string('generatedqrcode', 'mod_qrhunt'), array('class' => 'h1-text'));
+            echo html_writer::tag('div', html_writer::empty_tag('img', array('src' => 'data:image/png;base64,' . $imageData)), array('class' => 'image-container'));
             $linkAttributes = array(
                 'href' => 'download.php?file=' . $imagePath,
+                'class' => 'btn-big',
             );
-            $buttonAttributes = array(
-                'type' => 'button',
-                'class' => 'btn btn-dark custom-button',
-            );
+            echo html_writer::start_tag('div', array('class' => 'image-container'));
             echo html_writer::start_tag('a', $linkAttributes);
-            echo html_writer::start_tag('button', $buttonAttributes);
             echo get_string('downloadqrcode', 'mod_qrhunt');
-            echo html_writer::end_tag('button');
             echo html_writer::end_tag('a');
+            echo html_writer::end_tag('div');
             echo html_writer::tag('br', '');
         }
     } else {
-        echo html_writer::tag('h1', get_string('noqrimagefound', 'mod_qrhunt'));
+        echo html_writer::tag('h1', get_string('noqrimagefound', 'mod_qrhunt'), array('class' => 'h1-text'));
     }
 }
 
@@ -158,16 +155,18 @@ function display_camera(){
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <button class="btn btn-dark" id="start-camera" style="display:none; margin-top:15px; margin-bottom: 15px">
+    <h1 class="h1-user-text"><?php echo get_string('gametitle', 'mod_qrhunt'); ?></h1>
+
+    <button class="btn-big" id="start-camera" style="display:none; margin-left: 130px; margin-top:15px; margin-bottom: 15px">
         <?php echo get_string('startcamera', 'mod_qrhunt'); ?>
     </button>
-    <button class="btn btn-dark" id="stop-camera" style="display:none; margin-top:15px; margin-bottom: 15px">
+    <button class="btn-big" id="stop-camera" style="display:none; margin-left: 130px; margin-top:15px; margin-bottom: 15px">
         <?php echo get_string('stopcamera', 'mod_qrhunt'); ?>
     </button>
 
     <div id='video-container' style="display: none;">
-      <video id="video" width="300" height="225"></video>
-      <canvas id="canvas" style="display:none;"></canvas>
+      <video id="video"></video>
+      <canvas id="canvas"></canvas>
       <h3 style="display: none;" id="result"></h3>
     </div>
 
@@ -216,14 +215,15 @@ function display_answer_update_form($courseid, $moduleinstance, $cm){
         'id' => 'answer',
         'placeholder' => get_string('enterqranswer', 'mod_qrhunt'),
         'rows' => '5',
-        'cols' => '50'
+        'cols' => '87',
+        'class' => 'input-textarea'
     );
     
     // Submit button attributes.
     $input_attributes = array(
         'type' => 'submit',
         'value' => get_string('refreshqr', 'mod_qrhunt'),
-        'class' => 'btn btn-dark',
+        'class' => 'btn-big d-inline-block',
         'style' => 'margin-right: 20px',
     );
     
@@ -236,18 +236,16 @@ function display_answer_update_form($courseid, $moduleinstance, $cm){
     echo html_writer::tag('textarea', $moduleinstance->answer, $textarea_attributes);
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
-    
     // Button div.
     echo html_writer::start_tag('div', array('class' => 'form-group row'));
     echo html_writer::start_tag('div', array('class' => 'col-md-12'));
+    echo html_writer::start_tag('div', array('class' => 'button-wrapper'));
     echo html_writer::empty_tag('input', $input_attributes);
-
     create_button_to_play($cm);
     create_button_to_course($courseid, true);
-
     echo html_writer::end_tag('div');
     echo html_writer::end_tag('div');
-    
+    echo html_writer::end_tag('div');
     // Form end.
     echo html_writer::end_tag('form');     
     
@@ -264,14 +262,15 @@ function display_user_submit_form($courseid){
         'id' => 'user_answer',
         'placeholder' => get_string('enteranswer', 'mod_qrhunt'),
         'rows' => '5',
-        'cols' => '50',
+        'cols' => '70',
+        'class' => 'input-textarea'
     );
 
     $submit_attributes = array(
         'type' => 'submit',
         'name' => 'submit_answer',
         'value' => get_string('submitanswer', 'mod_qrhunt'),
-        'class' => 'btn btn-dark',
+        'class' => 'btn-big d-inline-block',
         'style' => 'margin-right: 15px'
     );
 
@@ -300,12 +299,12 @@ function create_button_to_play($cm) {
     $url = new moodle_url('/mod/qrhunt/play.php', array('id' => $PAGE->cm->id));
     $link_attributes = array(
         'href' => $url->out(),
-        'class' => 'btn btn-dark',
+        'class' => 'btn-big d-inline-block',
     );
     
     echo html_writer::start_tag('a', $link_attributes);
     echo get_string('play', 'mod_qrhunt');
-    echo html_writer::end_tag('a');    
+    echo html_writer::end_tag('a');
 }
 
 function create_button_to_home($needMargin) {
@@ -315,14 +314,14 @@ function create_button_to_home($needMargin) {
     if($needMargin){
         $link_attributes = array(
             'href' => $url->out(),
-            'class' => 'btn btn-dark',
+            'class' => 'btn-big',
             'style' => 'margin-left: 20px;',
         );
     }
     else{
         $link_attributes = array(
             'href' => $url->out(),
-            'class' => 'btn btn-dark',
+            'class' => 'btn-big',
         );
     }
     
@@ -338,14 +337,14 @@ function create_button_to_course($courseid, $needMargin) {
     if($needMargin){
         $link_attributes = array(
             'href' => $url->out(),
-            'class' => 'btn btn-dark',
+            'class' => 'btn-big d-inline-block',
             'style' => 'margin-left: 20px;',
         );
     }
     else{
         $link_attributes = array(
             'href' => $url->out(),
-            'class' => 'btn btn-dark',
+            'class' => 'btn-big d-inline-block',
         );
     }
     

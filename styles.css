@@ -1,13 +1,86 @@
-.custom-button-class {
-  background-color: #000;
-  color: #fff;
-  margin: 15px;
-}
-  
-.custom-button:hover {
-  background-color: #333;
+.h1-text {
+  margin-left: 10%;
+  font-size: 32px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333;
 }
 
-.btn btn-dark{
-  background-color: #2dc26b;
+.h1-user-text {
+  margin-left: 5%;
+  font-size: 32px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #333;
+}
+
+.btn-big {
+  background-image: linear-gradient(to right, #0c4cac 0%, #182848  51%, #0c4cac  100%);
+  padding: 20px 40px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  background-color: #343a40;
+  background-size: 200% auto;
+  border: none;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 10px;
+  transition: 0.5s;
+  color: white;
+  display: block;
+}
+
+.btn-big:hover {
+  background-position: right center; /* change the direction of the change here */
+  color: #fff;
+  text-decoration: none;
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40%;
+  width: 40%;
+}
+.button-wrapper {
+  display: inline-block;
+}
+
+.input-textarea{
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+  color: #333333;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Default styles for video */
+#video {
+  width: 100%;
+  margin-left: 100px;
+  height: auto;
+  max-width: 300px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+/* Media query for small devices */
+@media only screen and (max-width: 600px) {
+  #video {
+    max-width: 200px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    object-fit: cover;
+  }
+}
+
+#canvas {
+  display: none;
 }
