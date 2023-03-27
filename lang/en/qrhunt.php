@@ -66,12 +66,15 @@ $string['incorrectanswermessage'] = 'Sorry, your answer is not correct';
 
 $string['enterqranswer'] = 'Enter new QR answer';
 $string['refreshqr'] = 'Refresh QR';
+$string['successfulchange'] = 'QR code value has been changed to {$a}';
 
 $string['entercluetext'] = 'Enter new clue text';
 $string['updatecluetext'] = 'Update clue text';
 
 $string['enteranswer'] = 'Enter your answer';
 $string['submitanswer'] = 'Submit answer';
+$string['startcamera'] = 'Start camera';
+$string['stopcamera'] = 'Stop camera';
 
 $string['play'] = 'Play';
 $string['back'] = 'Back to start';

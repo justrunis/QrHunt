@@ -63,6 +63,7 @@ $courseid = $PAGE->course->id;
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
+$answer = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['answer'])) {
@@ -73,10 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $update = new stdClass();
         $update->id = $moduleinstance->id;
         $update->answer = $answer;
+        $update->timemodified = time();
         $DB->update_record('qrhunt', $update);
+        $_SESSION['message'] = get_string('successfulchange', 'qrhunt', $answer);
 
         // Redirect to the current page to avoid form resubmission on refresh.
-        redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
+        redirect($FULLME);
     } elseif (isset($_POST['cluetext'])) {
         // Get the submitted clue text.
         $cluetext = $_POST['cluetext'];
@@ -85,14 +88,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $update = new stdClass();
         $update->id = $moduleinstance->id;
         $update->cluetext = $cluetext;
+        $update->timemodified = time();
         $DB->update_record('qrhunt', $update);
 
         // Redirect to the current page to avoid form resubmission on refresh.
-        redirect(new moodle_url('/mod/qrhunt/view.php', array('id' => $cm->id)));
+        redirect($FULLME);
     }
 }
 
 echo $OUTPUT->header();
+
+if (!empty($_SESSION['message'])) {
+    mtrace("<div class='alert alert-success' role='alert'>" . $_SESSION['message'] . "</div>");
+    unset($_SESSION['message']); // Clear session data
+}
 
 // Get QR code data.
 $qrCodeData = $moduleinstance->answer;

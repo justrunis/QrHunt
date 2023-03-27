@@ -143,7 +143,7 @@ function display_qr_code_image($imagePath) {
             echo get_string('downloadqrcode', 'mod_qrhunt');
             echo html_writer::end_tag('button');
             echo html_writer::end_tag('a');
-            echo html_writer::tag('p', '');
+            echo html_writer::tag('br', '');
         }
     } else {
         echo html_writer::tag('h1', get_string('noqrimagefound', 'mod_qrhunt'));
@@ -158,7 +158,12 @@ function display_camera(){
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <button class="btn btn-dark" id="start-camera" style="display:none; margin-top:15px; margin-bottom: 15px">Start Camera</button>
+    <button class="btn btn-dark" id="start-camera" style="display:none; margin-top:15px; margin-bottom: 15px">
+        <?php echo get_string('startcamera', 'mod_qrhunt'); ?>
+    </button>
+    <button class="btn btn-dark" id="stop-camera" style="display:none; margin-top:15px; margin-bottom: 15px">
+        <?php echo get_string('stopcamera', 'mod_qrhunt'); ?>
+    </button>
 
     <div id='video-container' style="display: none;">
       <video id="video" width="300" height="225"></video>

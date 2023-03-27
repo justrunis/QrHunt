@@ -23,6 +23,7 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const result = document.getElementById('result');
 const startCameraBtn = document.getElementById('start-camera');
+const stopCameraBtn = document.getElementById('stop-camera');
 
 const videoContainer = document.getElementById('video-container');
 const currentUrl = window.location.href; // get current URL
@@ -39,16 +40,41 @@ console.log(navigator.mediaDevices);
 console.log(navigator.mediaDevices.getUserMedia);
 console.log(hasFinished);
 
+// append stop camera button to video container
+videoContainer.appendChild(stopCameraBtn);
+
+// add event listener to stop camera button
+stopCameraBtn.addEventListener('click', function() {
+  if (stream && !stream.getTracks()[0].ended) { // check if camera is currently active
+    videoContainer.style.display = "none"; // hide the video container
+    startCameraBtn.style.display = "block"; // show the start camera button
+    stream.getTracks().forEach(function(track) { // stop camera stream
+      track.stop();
+    });
+  }
+  stopCameraBtn.style.display = "none"; // hide the stop camera button
+});
+
+
+// hide the stop camera button by default
+stopCameraBtn.style.display = "none";
+
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished == false) {
   startCameraBtn.style.display = "block"; // show the start camera button
   startCameraBtn.addEventListener('click', function() {
+    if (stream) { // if an existing stream exists, stop it
+      stream.getTracks().forEach(function(track) {
+        track.stop();
+      });
+    }
     videoContainer.style.display = "block";
     startCameraBtn.style.display = "none"; // hide the start camera button
+    stopCameraBtn.style.display = "block"; // show the stop camera button
     navigator.mediaDevices.getUserMedia({ video: true }).then(function(mediaStream) {
       stream = mediaStream;
       video.srcObject = stream;
       video.play();
-      console.log('Displaying the camera feed')
+      console.log('Displaying the camera feed');
       video.addEventListener('play', function() {
         const ctx = canvas.getContext('2d');
         setInterval(function() {
@@ -57,6 +83,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code) {
             console.log('QR code detected:', code.data);
+            stopCameraBtn.style.display = "none"; // hide the stop camera button
             result.innerText = code.data;
             if (video.style.display !== 'none') {
               video.style.display = 'none';
@@ -72,4 +99,5 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished
       console.error('Failed to access device camera', error);
     });
   });
+  stopCameraBtn.style.display = "none"; // hide the stop camera button
 }

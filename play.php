@@ -97,13 +97,10 @@ if(!$hasAnsweredCorrectly){
     if ($completion->is_enabled($cm)) {
       $completion->update_state($cm, COMPLETION_INCOMPLETE, $USER->id);
     }
-    //create_button_to_course($courseid, false);
 }
 else{
     echo "<div class='alert alert-success' role='alert'>".get_string('correctanswermessage', 'mod_qrhunt')."</div>";
 
     create_button_to_course($courseid, false);
-
 }
-
 echo $OUTPUT->footer();
