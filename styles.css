@@ -7,3 +7,7 @@
 .custom-button:hover {
   background-color: #333;
 }
+
+.btn btn-dark{
+  background-color: #2dc26b;
+}
