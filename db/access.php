@@ -52,4 +52,3 @@ $capabilities = array(
     )
     // Other capabilities for the module...
 );
-
