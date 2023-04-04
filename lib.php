@@ -224,7 +224,6 @@ function display_answer_update_form($courseid, $moduleinstance, $cm){
         'type' => 'submit',
         'value' => get_string('refreshqr', 'mod_qrhunt'),
         'class' => 'btn-big d-inline-block',
-        'style' => 'margin-right: 20px',
     );
     
     // Form start.
@@ -315,7 +314,6 @@ function create_button_to_home($needMargin) {
         $link_attributes = array(
             'href' => $url->out(),
             'class' => 'btn-big',
-            'style' => 'margin-left: 20px;',
         );
     }
     else{
@@ -338,7 +336,6 @@ function create_button_to_course($courseid, $needMargin) {
         $link_attributes = array(
             'href' => $url->out(),
             'class' => 'btn-big d-inline-block',
-            'style' => 'margin-left: 20px;',
         );
     }
     else{
