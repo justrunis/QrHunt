@@ -78,10 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
 
 echo $OUTPUT->header();
 
-$hasSubmitedQR = false;
-
 $hasAnsweredCorrectly = has_user_answered_correctly($DB, $USER, $moduleinstance);
-
+if(!isset($moduleinstance->answer)){
+    echo '<div class="alert alert-danger">' . get_string('noanswergenerated', 'mod_qrhunt') . '</div>';
+}
 if(!$hasAnsweredCorrectly){
 
     if (isset($_SESSION['message'])) {

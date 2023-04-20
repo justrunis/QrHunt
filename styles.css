@@ -1,5 +1,5 @@
 .h1-text {
-  margin-left: 10%;
+  margin-left: 7%;
   font-size: 32px;
   font-weight: bold;
   text-transform: uppercase;
@@ -14,27 +14,13 @@
   color: #333;
 }
 
-.btn-big {
-  background-image: linear-gradient(to right, #0c4cac 0%, #182848  51%, #0c4cac  100%);
-  padding: 5px 10px;
-  font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  background-color: #343a40;
-  background-size: 200% auto;
-  border: none;
-  box-shadow: 0 0 20px #eee;
-  border-radius: 10px;
-  transition: 0.5s;
-  color: white;
-  display: block;
-  margin-right: 10px;
+.btn-primary {
+  margin: 5px;
 }
 
-.btn-big:hover {
-  background-position: right center; /* change the direction of the change here */
-  color: #fff;
-  text-decoration: none;
+
+.form-group{
+  margin-bottom: 0rem !important;
 }
 
 .image-container {
@@ -42,7 +28,7 @@
   justify-content: center;
   align-items: center;
   height: 40%;
-  width: 40%;
+  width: 30%;
 }
 
 .button-wrapper {
@@ -55,7 +41,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
-  margin-bottom: 10px;
   color: #333333;
   background-color: #f9f9f9;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);

@@ -36,10 +36,6 @@ const url = `${currentUrl.substring(0, currentUrl.lastIndexOf('/'))}/play.php?id
 let hasFinished = false;
 let stream = null;
 
-console.log(navigator.mediaDevices);
-console.log(navigator.mediaDevices.getUserMedia);
-console.log(hasFinished);
-
 // append stop camera button to video container
 videoContainer.appendChild(stopCameraBtn);
 
@@ -74,7 +70,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished
       stream = mediaStream;
       video.srcObject = stream;
       video.play();
-      console.log('Displaying the camera feed');
       video.addEventListener('play', function() {
         const ctx = canvas.getContext('2d');
         setInterval(function() {
@@ -82,7 +77,6 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia && hasFinished
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code) {
-            console.log('QR code detected:', code.data);
             stopCameraBtn.style.display = "none"; // hide the stop camera button
             result.innerText = code.data;
             if (video.style.display !== 'none') {
