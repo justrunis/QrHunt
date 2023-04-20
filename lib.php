@@ -263,7 +263,8 @@ function display_user_submit_form($courseid){
         'rows' => '5',
         'cols' => '70',
         'class' => 'input-textarea',
-        'readonly' => 'readonly'
+        'readonly' => 'readonly',
+        'required' => 'required'
     );
 
     $submit_attributes = array(
@@ -289,6 +290,19 @@ function display_user_submit_form($courseid){
     echo html_writer::end_tag('div');
 
     echo html_writer::end_tag('form');
+
+    ?>
+    <script>
+        $(document).ready(function() {
+            $('form').submit(function(e) {
+                if ($('#user_answer').val().trim() === '') {
+                    e.preventDefault();
+                    alert('<?php echo get_string('noanswererror', 'mod_qrhunt'); ?>');
+                }
+            });
+        });
+    </script>
+    <?php
 }
 
 

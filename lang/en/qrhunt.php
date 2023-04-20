@@ -64,6 +64,7 @@ $string['noqrimagefound'] = 'No QR image found';
 $string['noanswergenerated'] = 'QR answer is not generated';
 $string['correctanswermessage'] = 'Congratulations, your answer is correct press back to start to go back';
 $string['incorrectanswermessage'] = 'Sorry, your answer is not correct';
+$string['noanswererror'] = 'You need to scan a QR code to submit the answer';
 
 $string['enterqranswer'] = 'Enter new QR answer';
 $string['refreshqr'] = 'Refresh QR';
@@ -73,7 +74,7 @@ $string['entercluetext'] = 'Enter new clue text';
 $string['updatecluetext'] = 'Update clue text';
 
 $string['gametitle'] = 'Submit your answer';
-$string['enteranswer'] = 'Enter your answer or scan a QR code';
+$string['enteranswer'] = 'Scan QR code to submit answer';
 $string['submitanswer'] = 'Submit answer';
 $string['startcamera'] = 'Start camera';
 $string['stopcamera'] = 'Stop camera';

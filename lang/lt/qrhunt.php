@@ -64,6 +64,7 @@ $string['noqrimagefound'] = 'Nerasta QR kodo nuotrauka';
 $string['noanswergenerated'] = 'Nėra sugeneruotas atsakymo QR kodas';
 $string['correctanswermessage'] = 'Sveikiname, jūsų atsakymas teisingas, paspauskite atgal į pradžią, kad grįžti atgal';
 $string['incorrectanswermessage'] = 'Atsiprašome, jūsų atsakymas neteisingas';
+$string['noanswererror'] = 'Norėdami pateikti atsakymą, turite nuskaityti QR kodą';
 
 $string['enterqranswer'] = 'Įveskite naują QR atsakymą';
 $string['refreshqr'] = 'Atnaujinti QR';
@@ -73,7 +74,7 @@ $string['entercluetext'] = 'Įveskite naują užuominos tekstą';
 $string['updatecluetext'] = 'Atnaujinti užuominos tekstą';
 
 $string['gametitle'] = 'Pateikti savo atsakymą';
-$string['enteranswer'] = 'Įveskite atsakymą arba nuskaitykite QR kodą';
+$string['enteranswer'] = 'Nuskaitykite QR kodą tam kad pateikti atsakymą';
 $string['submitanswer'] = 'Pateikti atsakymą';
 $string['startcamera'] = 'Įjungti kamerą';
 $string['stopcamera'] = 'Išjungti kamerą';
