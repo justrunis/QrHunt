@@ -223,7 +223,7 @@ function display_answer_update_form($courseid, $moduleinstance, $cm){
     $input_attributes = array(
         'type' => 'submit',
         'value' => get_string('refreshqr', 'mod_qrhunt'),
-        'class' => 'btn btn-primary d-inline-block',
+        'class' => 'btn btn-success d-inline-block',
     );
     
     // Form start.
@@ -271,7 +271,7 @@ function display_user_submit_form($courseid){
         'type' => 'submit',
         'name' => 'submit_answer',
         'value' => get_string('submitanswer', 'mod_qrhunt'),
-        'class' => 'btn btn-primary d-inline-block',
+        'class' => 'btn btn-success d-inline-block',
     );
 
     echo html_writer::start_tag('form', $form_attributes);
