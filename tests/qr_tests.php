@@ -37,7 +37,7 @@ require_once($CFG->dirroot . '/mod/qrhunt/phpqrcode/qrlib.php');
 
 use PHPUnit\Framework\TestCase;
 
-// command to run these tests vendor/bin/phpunit tests/location_tests.php
+// command to run these tests - vendor/bin/phpunit tests/qr_tests.php
 class qr_tests extends TestCase
 {
 
