@@ -33,12 +33,26 @@ define('CLI_SCRIPT', true);
 require(__DIR__.'/../../../config.php');
 global $CFG;
 require_once("$CFG->dirroot/mod/qrhunt/lib.php");
+require_once($CFG->dirroot . '/mod/qrhunt/phpqrcode/qrlib.php');
 
 use PHPUnit\Framework\TestCase;
 
 // command to run these tests vendor/bin/phpunit tests/location_tests.php
 class qr_tests extends TestCase
 {
+
+    private $testImageNames = ['test_image.png', 'test_image_different.png'];
+
+    protected function tearDown(): void
+    {
+        foreach ($this->testImageNames as $imageName) {
+            $imagePath = __DIR__ . '/../qrcodes/' . $imageName;
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+    }
+
     public function testQrCodeGeneratedSuccessfully() {
         $qrCodeData = 'https://example.com';
         $imageName = 'test_qr_code';
@@ -52,5 +66,136 @@ class qr_tests extends TestCase
 
         // Assert that the generated image is a valid PNG image.
         $this->assertNotFalse(@imagecreatefrompng($imagePath));
+    }
+
+    public function testQrCodeGeneratedWrong()
+    {
+        // Set up test data
+        $qrCodeData = "https://www.example.com";
+        $imageName = "test_image";
+        $differentQrCodeData = "https://www.example.org";
+
+        // Generate the QR code images
+        $imagePath = generate_qr_code_image($qrCodeData, $imageName);
+        $differentImagePath = generate_qr_code_image($differentQrCodeData, $imageName . "_different");
+
+        // Assert that the generated images exist
+        $this->assertFileExists($imagePath);
+        $this->assertFileExists($differentImagePath);
+
+        // Assert that the generated images are not equal
+        $this->assertNotEquals(
+            file_get_contents($differentImagePath),
+            file_get_contents($imagePath)
+        );
+    }
+
+    public function testUserHasAnsweredCorrectly()
+    {
+        $DB = $this->getMockBuilder(stdClass::class)
+            ->setMethods(['get_records', 'get_record'])
+            ->getMock();
+
+        $USER = new stdClass();
+        $USER->id = 1;
+
+        $moduleinstance = new stdClass();
+        $moduleinstance->id = 2;
+
+        $records = [
+            (object) ['userid' => 1, 'correctanswer' => 1, 'answer' => 'answer1']
+        ];
+
+        $DB->expects($this->once())
+            ->method('get_records')
+            ->with('qrhunt_user_activity', ['userid' => $USER->id])
+            ->willReturn($records);
+
+        $DB->expects($this->once())
+            ->method('get_record')
+            ->with('qrhunt', ['id' => $moduleinstance->id])
+            ->willReturn((object) ['answer' => 'answer1']);
+
+        $this->assertTrue(has_user_answered_correctly($DB, $USER, $moduleinstance));
+    }
+
+    public function testUserHasNotAnsweredCorrectly()
+    {
+        $DB = $this->getMockBuilder(stdClass::class)
+            ->setMethods(['get_records', 'get_record'])
+            ->getMock();
+
+        $USER = new stdClass();
+        $USER->id = 1;
+
+        $moduleinstance = new stdClass();
+        $moduleinstance->id = 2;
+
+        $records = [
+            (object) ['userid' => 1, 'correctanswer' => 1, 'answer' => 'answer2']
+        ];
+
+        $DB->expects($this->once())
+            ->method('get_records')
+            ->with('qrhunt_user_activity', ['userid' => $USER->id])
+            ->willReturn($records);
+
+        $DB->expects($this->once())
+            ->method('get_record')
+            ->with('qrhunt', ['id' => $moduleinstance->id])
+            ->willReturn((object) ['answer' => 'answer1']);
+
+        $this->assertFalse(has_user_answered_correctly($DB, $USER, $moduleinstance));
+    }
+
+    public function testNoUserActivityRecords()
+    {
+        $DB = $this->getMockBuilder(stdClass::class)
+            ->setMethods(['get_records', 'get_record'])
+            ->getMock();
+
+        $USER = new stdClass();
+        $USER->id = 1;
+
+        $moduleinstance = new stdClass();
+        $moduleinstance->id = 2;
+
+        $DB->expects($this->once())
+            ->method('get_records')
+            ->with('qrhunt_user_activity', ['userid' => $USER->id])
+            ->willReturn([]);
+
+        $DB->expects($this->once())
+            ->method('get_record')
+            ->with('qrhunt', ['id' => $moduleinstance->id])
+            ->willReturn((object) ['answer' => 'answer1']);
+
+        $this->assertFalse(has_user_answered_correctly($DB, $USER, $moduleinstance));
+    }
+
+    public function testWriteQrhuntUserGrade()
+    {
+        global $DB, $PAGE;
+
+        // Set up test data
+        $moduleInstance = (object)array('name' => 'Test QR Hunt');
+        $USER = (object)array('id' => 1);
+        $PAGE = (object)array('course' => (object)array('id' => 1));
+        $rawgrade = 80;
+
+        // Call the function being tested
+        write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade);
+
+        // Assert that the grade has been added to the database
+        $grade = $DB->get_record('grade_grades', array('userid' => $USER->id));
+        $this->assertNotNull($grade);
+        $this->assertEquals($rawgrade, $grade->rawgrade);
+
+        // Assert that the grade item has been added to the database
+        $grade_item = $DB->get_record('grade_items', array('itemname' => $moduleInstance->name));
+        $this->assertNotNull($grade_item);
+        $this->assertEquals(GRADE_TYPE_VALUE, $grade_item->gradetype);
+        $this->assertEquals(100, $grade_item->grademax);
+        $this->assertEquals(0, $grade_item->grademin);
     }
 }
