@@ -175,7 +175,7 @@ function display_camera(){
     <?php
 }
 
-function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE) {
+function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE, $CFG) {
       
     // Insert the user's answer into the qrhunt_user_activity table.
     $user_activity = new stdClass();
@@ -193,7 +193,7 @@ function insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $startt
         $DB->insert_record('qrhunt_user_activity', $user_activity);
 
         $rawgrade = 100;
-        write_qrhunt_user_grade($moduleinstance, $USER, $PAGE, $rawgrade);
+        write_qrhunt_user_grade($moduleinstance, $USER, $PAGE, $rawgrade, $CFG);
     } else {
         $user_activity->correctanswer = 0;
         $DB->insert_record('qrhunt_user_activity', $user_activity);
@@ -411,7 +411,16 @@ function qrhunt_mod_instance_can_be_completed($cm, $id) {
     $completion->update_state($cm, COMPLETION_COMPLETE, intval($id));
 }
 
-function write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade){
+function write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG){
+    require_once($CFG->dirroot . '\lib\gradelib.php');
+
+    if (!is_object($moduleInstance) || !is_object($USER) || !is_object($PAGE)) {
+        throw new InvalidArgumentException(get_string('invalidinputparameters','mod_qrhunt'));
+    }
+
+    if (!is_numeric($rawgrade) || $rawgrade < 0 || $rawgrade > 100) {
+        throw new InvalidArgumentException(get_string('invalidgradevalue','mod_qrhunt'));
+    }
     $item = array(
         'itemname' => $moduleInstance->name,
         'gradetype' => GRADE_TYPE_VALUE,

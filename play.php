@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['submit_answer'])) {
     // Get the submitted answer.
     $answer = $_POST['user_answer'];
 
-    insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE);
+    insert_user_activity_data($DB, $moduleinstance, $answer, $USER, $starttimestamp, $cm, $PAGE, $CFG);
 
     redirect($FULLME);
 }

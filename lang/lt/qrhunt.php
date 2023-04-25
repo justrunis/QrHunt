@@ -82,6 +82,9 @@ $string['stopcamera'] = 'Išjungti kamerą';
 $string['play'] = 'Žaisti';
 $string['back'] = 'Atgal į pradžią';
 
+$string['invalidinputparameters'] = 'Netinkami įvesties parametrai';
+$string['invalidgradevalue'] = 'Netinkama pažymio reikšmė';
+
 $string['completion'] = 'Nustatyti užbaigimą';
 $string['completionnone'] = 'Nėra';
 $string['completionmanual'] = 'Rankinis užbaigimas';

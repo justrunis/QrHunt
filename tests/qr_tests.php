@@ -175,7 +175,7 @@ class qr_tests extends TestCase
 
     public function testWriteQrhuntUserGrade()
     {
-        global $DB, $PAGE;
+        global $DB, $PAGE, $CFG;
 
         // Set up test data
         $moduleInstance = (object)array('name' => 'Test QR Hunt');
@@ -184,7 +184,7 @@ class qr_tests extends TestCase
         $rawgrade = 80;
 
         // Call the function being tested
-        write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade);
+        write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG);
 
         // Assert that the grade has been added to the database
         $grade = $DB->get_record('grade_grades', array('userid' => $USER->id));

@@ -82,6 +82,9 @@ $string['stopcamera'] = 'Stop camera';
 $string['play'] = 'Play';
 $string['back'] = 'Back to start';
 
+$string['invalidinputparameters'] = 'Invalid input parameters';
+$string['invalidgradevalue'] = 'Invalid grade value';
+
 $string['completion'] = 'Set completion';
 $string['completionnone'] = 'None';
 $string['completionmanual'] = 'Manual completion';
