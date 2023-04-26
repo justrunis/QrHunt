@@ -57,7 +57,7 @@ $string['modulenameicon'] = '<img src="'.$CFG->wwwroot.'/mod/qrhunt/pix/icon.png
 
 $string['qrhuntcluestarttext'] = 'Užuomina apie kodą: ';
 $string['generatedqrcode'] = 'Sugeneruotas QR kodas';
-$string['downloadqrcode'] = 'Atsisiūsti QR kodo nuotrauką';
+$string['downloadqrcode'] = 'Atsisiųsti QR kodo nuotrauką';
 $string['errorfilenotfound'] = 'Nerastas QR kodo failas';
 $string['noqrimagefound'] = 'Nerasta QR kodo nuotrauka';
 

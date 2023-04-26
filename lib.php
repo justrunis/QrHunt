@@ -119,6 +119,11 @@ function generate_qr_code_image($qrCodeData, $imageName) {
     // Generate and save QR code image.
     QRcode::png($qrCodeData, $imagePath, QR_ECLEVEL_L, 10);
 
+    if (!file_exists($imagePath)) {
+        $error = error_get_last();
+        error_log($error['message']);
+        return null;
+    }
     return $imagePath;
 }
 
@@ -163,6 +168,8 @@ function display_camera(){
     <button class="btn btn-primary" id="stop-camera">
         <?php echo get_string('stopcamera', 'mod_qrhunt'); ?>
     </button>
+    <button class="btn btn-primary" id="switch-camera">Switch Camera</button>
+
 
     <div id='video-container' style="display: none;">
       <video id="video"></video>
@@ -412,7 +419,8 @@ function qrhunt_mod_instance_can_be_completed($cm, $id) {
 }
 
 function write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG){
-    require_once($CFG->dirroot . '\lib\gradelib.php');
+
+    require_once($CFG->libdir . '/gradelib.php');
 
     if (!is_object($moduleInstance) || !is_object($USER) || !is_object($PAGE)) {
         throw new InvalidArgumentException(get_string('invalidinputparameters','mod_qrhunt'));
