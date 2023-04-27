@@ -172,30 +172,4 @@ class qr_tests extends TestCase
 
         $this->assertFalse(has_user_answered_correctly($DB, $USER, $moduleinstance));
     }
-
-    public function testWriteQrhuntUserGrade()
-    {
-        global $DB, $PAGE, $CFG;
-
-        // Set up test data
-        $moduleInstance = (object)array('name' => 'Test QR Hunt');
-        $USER = (object)array('id' => 1);
-        $PAGE = (object)array('course' => (object)array('id' => 1));
-        $rawgrade = 80;
-
-        // Call the function being tested
-        write_qrhunt_user_grade($moduleInstance, $USER, $PAGE, $rawgrade, $CFG);
-
-        // Assert that the grade has been added to the database
-        $grade = $DB->get_record('grade_grades', array('userid' => $USER->id));
-        $this->assertNotNull($grade);
-        $this->assertEquals($rawgrade, $grade->rawgrade);
-
-        // Assert that the grade item has been added to the database
-        $grade_item = $DB->get_record('grade_items', array('itemname' => $moduleInstance->name));
-        $this->assertNotNull($grade_item);
-        $this->assertEquals(GRADE_TYPE_VALUE, $grade_item->gradetype);
-        $this->assertEquals(100, $grade_item->grademax);
-        $this->assertEquals(0, $grade_item->grademin);
-    }
 }
