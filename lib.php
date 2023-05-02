@@ -168,7 +168,9 @@ function display_camera(){
     <button class="btn btn-primary" id="stop-camera">
         <?php echo get_string('stopcamera', 'mod_qrhunt'); ?>
     </button>
-    <button class="btn btn-primary" id="switch-camera">Switch Camera</button>
+    <button class="btn btn-primary" id="switch-camera">
+        <?php echo get_string('switchcamera', 'mod_qrhunt'); ?>
+    </button>
 
 
     <div id='video-container' style="display: none;">

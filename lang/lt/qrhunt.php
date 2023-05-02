@@ -78,6 +78,7 @@ $string['enteranswer'] = 'Nuskaitykite QR kodą tam kad pateikti atsakymą';
 $string['submitanswer'] = 'Pateikti atsakymą';
 $string['startcamera'] = 'Įjungti kamerą';
 $string['stopcamera'] = 'Išjungti kamerą';
+$string['switchcamera'] = 'Pakeisti kamerą';
 
 $string['play'] = 'Žaisti';
 $string['back'] = 'Atgal į pradžią';

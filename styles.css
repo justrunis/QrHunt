@@ -46,7 +46,7 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-#start-camera, #stop-camera{
+#start-camera, #stop-camera #switch-camera{
   margin-bottom: 10px;
 }
 

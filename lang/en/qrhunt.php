@@ -78,6 +78,7 @@ $string['enteranswer'] = 'Scan QR code to submit answer';
 $string['submitanswer'] = 'Submit answer';
 $string['startcamera'] = 'Start camera';
 $string['stopcamera'] = 'Stop camera';
+$string['switchcamera'] = 'Switch camera';
 
 $string['play'] = 'Play';
 $string['back'] = 'Back to start';
